@@ -1,0 +1,49 @@
+# Git files
+.git
+.gitignore
+.gitattributes
+
+# Development files
+.env
+.env.local
+.env.*.local
+.vscode
+.idea
+*.swp
+*.swo
+*~
+.DS_Store
+
+# Node/NPM
+node_modules
+npm-debug.log
+package-lock.json
+yarn.lock
+
+# Composer
+composer.lock
+
+# Logs
+*.log
+
+# Testing
+tests
+phpunit.xml
+coverage
+
+# Build artifacts
+dist
+build
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Documentation
+*.md
+docs
+
+# Project files
+.htaccess
+install.bat
+install.sh

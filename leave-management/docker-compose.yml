@@ -1,0 +1,75 @@
+version: '3.8'
+
+services:
+  # MySQL Database Service
+  mysql:
+    image: mysql:8.0
+    container_name: leave_management_mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: ${DB_PASSWORD:-root_password}
+      MYSQL_DATABASE: ${DB_NAME:-leave_management}
+      MYSQL_USER: ${DB_USER:-leave_user}
+      MYSQL_PASSWORD: ${DB_PASSWORD:-user_password}
+      MYSQL_ROOT_HOST: '%'
+    ports:
+      - "${DB_PORT:-3306}:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+      - ./database/schema.sql:/docker-entrypoint-initdb.d/schema.sql
+    networks:
+      - leave_network
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      timeout: 20s
+      retries: 10
+    restart: unless-stopped
+
+  # PHP Application Service
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: leave_management_app
+    depends_on:
+      mysql:
+        condition: service_healthy
+    environment:
+      DB_HOST: mysql
+      DB_NAME: ${DB_NAME:-leave_management}
+      DB_USER: ${DB_USER:-leave_user}
+      DB_PASSWORD: ${DB_PASSWORD:-user_password}
+      APP_ENV: ${APP_ENV:-development}
+      APP_DEBUG: ${APP_DEBUG:-true}
+    ports:
+      - "${APP_PORT:-8000}:80"
+    volumes:
+      - .:/var/www/html
+      - ./public:/var/www/html/public
+    networks:
+      - leave_network
+    restart: unless-stopped
+
+  # PHPMyAdmin for Database Management
+  phpmyadmin:
+    image: phpmyadmin:latest
+    container_name: leave_management_phpmyadmin
+    depends_on:
+      - mysql
+    environment:
+      PMA_HOST: mysql
+      PMA_USER: ${DB_USER:-leave_user}
+      PMA_PASSWORD: ${DB_PASSWORD:-user_password}
+      PMA_ROOT_PASSWORD: ${DB_PASSWORD:-root_password}
+    ports:
+      - "${PHPMYADMIN_PORT:-8080}:80"
+    networks:
+      - leave_network
+    restart: unless-stopped
+
+volumes:
+  mysql_data:
+    driver: local
+
+networks:
+  leave_network:
+    driver: bridge

@@ -1,0 +1,27 @@
+{
+  "name": "leave-management-system",
+  "version": "1.0.0",
+  "description": "A comprehensive leave management system with role-based access control",
+  "main": "public/index.html",
+  "scripts": {
+    "dev": "cd public && php -S localhost:8000",
+    "deploy": "vercel --prod"
+  },
+  "keywords": [
+    "leave-management",
+    "hr-system",
+    "employee-management",
+    "php",
+    "mysql",
+    "vercel"
+  ],
+  "author": "Your Company",
+  "license": "MIT",
+  "engines": {
+    "node": ">=14.x"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/yourusername/leave-management-system.git"
+  }
+}
