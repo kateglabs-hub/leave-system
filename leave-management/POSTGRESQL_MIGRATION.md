@@ -1,13 +1,16 @@
-# PostgreSQL Migration Guide
+# PostgreSQL Migration Guide (Vercel Neon Optimized)
 
-Your Leave Management System has been successfully migrated from MySQL to PostgreSQL.
+Your Leave Management System has been successfully migrated from MySQL to PostgreSQL with optimization for **Vercel Neon**.
 
 ## What Changed
 
 ### 1. **Database Configuration** (`config/database.php`)
 - Changed from MySQL PDO driver to PostgreSQL (pgsql)
-- Added `DB_PORT` environment variable (default: 5432)
-- Updated connection string format for PostgreSQL
+- Added support for **Neon DATABASE_URL** format (single connection string)
+- Added support for individual environment variables (local development)
+- Added SSL support (required for Neon in production)
+- Added connection pooling configuration
+- Added automatic sslmode=require for Neon connections
 
 ### 2. **Database Schema** (`database/schema.sql`)
 - Converted `INT AUTO_INCREMENT` → `SERIAL`
@@ -20,13 +23,19 @@ Your Leave Management System has been successfully migrated from MySQL to Postgr
 - Converted `YEAR(NOW())` → `EXTRACT(YEAR FROM NOW())::INT`
 
 ### 4. **Environment Variables** (`.env` & `vercel.json`)
-- Updated `DB_HOST` from `mysql` to `postgres` (Docker)
-- Added `DB_PORT: 5432` (PostgreSQL default)
-- Updated Vercel environment variables
+- Updated to use **Neon DATABASE_URL** single connection string (recommended)
+- Optional: Individual environment variables for local Docker development
+- `vercel.json` now uses single `@database_url` environment variable
 
 ## Environment Variables for Deployment
 
 ### Local Development (.env)
+**Option 1: Neon (for testing connection)**
+```env
+DATABASE_URL=postgresql://user:password@ep-xxxx-region.neon.tech/dbname?sslmode=require
+```
+
+**Option 2: Docker (local testing)**
 ```env
 DB_HOST=postgres
 DB_PORT=5432
@@ -35,13 +44,14 @@ DB_USER=leave_user
 DB_PASSWORD=leave_password
 ```
 
-### Production (Vercel/Railway)
-Set these in your deployment platform:
-- `DB_HOST` - Your PostgreSQL host (e.g., `db.railway.app`)
-- `DB_PORT` - PostgreSQL port (usually `5432`)
-- `DB_NAME` - Database name
-- `DB_USER` - Database username
-- `DB_PASSWORD` - Database password
+### Production (Vercel + Neon)
+Set **only one** environment variable in Vercel:
+- `DATABASE_URL` - Your Neon connection string from https://console.neon.tech
+
+Example Neon URL format:
+```
+postgresql://neon_user:password@ep-cool-moon-12345.us-east-1.neon.tech/neon_db?sslmode=require
+```
 
 ## Docker Setup (PostgreSQL)
 
@@ -123,32 +133,77 @@ INSERT INTO departments (name, description) VALUES
 2. Import schema from `database/schema.sql`
 3. Insert seed data from `database/seed.sql`
 
-## Deployment to Vercel
+## Deployment to Vercel with Neon
 
-### 1. Connect Your Database
-Use one of these services that offer PostgreSQL hosting:
-- **Railway.app** (recommended - simple setup)
-- **Vercel Postgres** (new offering)
-- **Supabase** (PostgreSQL alternative)
-- **Neon** (serverless PostgreSQL)
+### 1. Create Neon Database
+1. Go to https://console.neon.tech
+2. Sign up / Log in
+3. Create a new project (free tier available)
+4. Copy your connection string (looks like `postgresql://user:password@ep-xxxx.neon.tech/dbname?sslmode=require`)
 
-### 2. Set Vercel Environment Variables
+### 2. Set Vercel Environment Variable
 In Vercel Dashboard → Project Settings → Environment Variables:
 ```
-DB_HOST: <your-postgres-host>
-DB_PORT: 5432
-DB_NAME: <database-name>
-DB_USER: <database-user>
-DB_PASSWORD: <database-password>
+DATABASE_URL: <your-neon-connection-string>
 ```
 
-### 3. Deploy
+Example:
+```
+postgresql://neon_user:abc123def456@ep-cool-moon-12345.us-east-1.neon.tech/neon_db?sslmode=require
+```
+
+### 3. Create Database Schema on Neon
+Connect to Neon and run the schema:
+
+**Option A: Using psql**
+```bash
+# Install psql if needed
+# brew install postgresql  (macOS)
+# apt-get install postgresql-client  (Linux)
+
+psql DATABASE_URL < database/schema.sql
+psql DATABASE_URL < database/seed.sql
+```
+
+**Option B: Using Neon Console**
+1. Go to your Neon project
+2. Click "SQL Editor"
+3. Copy-paste contents from `database/schema.sql`
+4. Run the query
+5. Repeat for `database/seed.sql`
+
+**Option C: Using pgAdmin**
+1. Connect pgAdmin to Neon using the connection string
+2. Import `database/schema.sql`
+3. Import `database/seed.sql`
+
+### 4. Deploy
 ```bash
 git add .
-git commit -m "Migrate to PostgreSQL"
+git commit -m "Optimize for Vercel Neon PostgreSQL"
 git push
 vercel --prod
 ```
+
+## Neon-Specific Features
+
+### Connection Pooling
+The database config automatically enables connection pooling when using Neon. This:
+- Reduces connection overhead
+- Improves performance on serverless (Vercel Functions)
+- Handles concurrent requests efficiently
+
+### SSL/TLS
+Neon requires SSL connections. The config automatically:
+- Adds `sslmode=require` when using DATABASE_URL
+- Adds `sslmode=require` in production environments
+- Enforces secure connections to Neon
+
+### Automatic Region Selection
+Neon automatically selects the closest region. Connection URLs vary:
+- US East: `ep-xxxx.us-east-1.neon.tech`
+- EU West: `ep-xxxx.eu-west-1.neon.tech`
+- Asia Pacific: `ep-xxxx.ap-southeast-1.neon.tech`
 
 ## Differences Between MySQL and PostgreSQL
 
@@ -163,30 +218,31 @@ vercel --prod
 
 ## Troubleshooting
 
-### Connection Error
-- Ensure PostgreSQL is running
-- Check `DB_HOST`, `DB_PORT`, `DB_USER`, `DB_PASSWORD` in `.env`
-- Verify PostgreSQL is listening on port 5432
+### Neon Connection Errors
+**Error: "sslmode not allowed in connection string"**
+- Ensure your Neon URL includes `?sslmode=require` at the end
+- The config handles this automatically if DATABASE_URL is set
 
-### Schema Creation Error
-- Run schema and seed separately if combined fails
-- Check for syntax errors in SQL files
-- Ensure database user has sufficient permissions
+**Error: "Connection refused"**
+- Check Neon project is active (may pause after 7 days of inactivity in free tier)
+- Verify DATABASE_URL environment variable is set in Vercel
+- Check database credentials are correct
+
+**Error: "database doesn't exist"**
+- Run the schema.sql against your Neon database
+- Ensure database name in URL matches created database
 
 ### Vercel Deployment 404
-- Verify all environment variables are set in Vercel
-- Check database can be accessed from Vercel servers
-- Review Vercel build logs for errors
+- Verify `DATABASE_URL` is set in Vercel environment
+- Check build logs in Vercel dashboard
+- Ensure schema was created before deployment
 
-## Rollback to MySQL (if needed)
+### Performance Issues
+- Enable query logging in Neon console to identify slow queries
+- Use Neon's built-in monitoring
+- Consider upgrading from free tier if hitting limits
 
-1. Restore backup database from MySQL
-2. Revert changes:
-   - `config/database.php` - change back to mysql driver
-   - `database/schema.sql` - convert back to MySQL syntax
-   - `.env` - change `DB_HOST=mysql` and `DB_PORT=3306`
-3. Update `vercel.json` environment variables
-
----
-
-**Migration completed successfully!** Your system is now ready for PostgreSQL.
+### Connection Pooling Issues
+- Neon automatically manages pooling
+- Max connections per branch: 100 (free tier)
+- Use separate branches for different environments
