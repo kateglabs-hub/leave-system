@@ -1,6 +1,6 @@
 {
-  "name": "leave-management-system",
-  "description": "A comprehensive leave management system",
+  "name": "kevo-dev/leave-management-system",
+  "description": "A comprehensive leave management system with role-based access control",
   "type": "project",
   "require": {
     "php": ">=8.0"
