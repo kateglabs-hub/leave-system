@@ -15,24 +15,25 @@ ON CONFLICT DO NOTHING;
 INSERT INTO leave_balances (user_id, leave_type_id, year, total_days, used_days, remaining_days)
 SELECT 1, id, EXTRACT(YEAR FROM NOW())::INT, 
     CASE id 
-        WHEN 1 THEN 25
-        WHEN 2 THEN 15
-        WHEN 3 THEN 7
-        WHEN 4 THEN 90
-        WHEN 5 THEN 14
-        WHEN 6 THEN 10
-        WHEN 7 THEN 0
-    END,
-    0,
-    CASE id 
-        WHEN 1 THEN 25
-        WHEN 2 THEN 15
-        WHEN 3 THEN 7
-        WHEN 4 THEN 90
-        WHEN 5 THEN 14
-        WHEN 6 THEN 10
-        WHEN 7 THEN 0
-    END
-FROM leave_types
-WHERE NOT EXISTS (SELECT 1 FROM leave_balances WHERE user_id = 1 AND year = EXTRACT(YEAR FROM NOW())::INT)
-ON CONFLICT DO NOTHING;
+            WHEN 1 THEN 25
+                    WHEN 2 THEN 15
+                            WHEN 3 THEN 7
+                                    WHEN 4 THEN 90
+                                            WHEN 5 THEN 14
+                                                    WHEN 6 THEN 10
+                                                            WHEN 7 THEN 0
+                                                                END,
+                                                                    0,
+                                                                        CASE id 
+                                                                                WHEN 1 THEN 25
+                                                                                        WHEN 2 THEN 15
+                                                                                                WHEN 3 THEN 7
+                                                                                                        WHEN 4 THEN 90
+                                                                                                                WHEN 5 THEN 14
+                                                                                                                        WHEN 6 THEN 10
+                                                                                                                                WHEN 7 THEN 0
+                                                                                                                                    END
+                                                                                                                                    FROM leave_types
+                                                                                                                                    WHERE NOT EXISTS (SELECT 1 FROM leave_balances WHERE user_id = 1 AND year = EXTRACT(YEAR FROM NOW())::INT)
+                                                                                                                                    ON CONFLICT DO NOTHING;
+                                                                                                                                    
