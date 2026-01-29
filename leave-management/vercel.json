@@ -16,7 +16,7 @@
       "dest": "/api/index.php"
     },
     {
-      "src": "/(.*\\.(js|css|html|png|jpg|jpeg|gif|svg|ico))",
+      "src": "/public/(.*)",
       "dest": "/public/$1"
     },
     {
