@@ -14,7 +14,7 @@ VALUES ('EMP002', 'hr@company.com', '$2y$10$N9qo8uLOickgx2ZMRZoMyeIjZAgcg7b3XeKe
 
 -- Initialize leave balances for admin user
 INSERT INTO leave_balances (user_id, leave_type_id, year, total_days, used_days, remaining_days)
-SELECT 1, id, YEAR(NOW()), 
+SELECT 1, id, EXTRACT(YEAR FROM NOW())::INT, 
     CASE id 
         WHEN 1 THEN 25
         WHEN 2 THEN 15
@@ -35,4 +35,4 @@ SELECT 1, id, YEAR(NOW()),
         WHEN 7 THEN 0
     END
 FROM leave_types
-WHERE NOT EXISTS (SELECT 1 FROM leave_balances WHERE user_id = 1 AND year = YEAR(NOW()));
+WHERE NOT EXISTS (SELECT 1 FROM leave_balances WHERE user_id = 1 AND year = EXTRACT(YEAR FROM NOW())::INT);
