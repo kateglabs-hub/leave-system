@@ -23,8 +23,12 @@ For local Docker or Neon testing:
 # Option 1: Neon (for testing against production database)
 DATABASE_URL=postgresql://username:password@ep-xxxx.region.neon.tech/database?sslmode=require
 
-# Option 2: Docker PostgreSQL (local only)
-# DATABASE_URL=postgresql://leave_user:leave_password@localhost:5432/leave_management
+# Option 2: Docker PostgreSQL (local only - Vercel Neon naming)
+# POSTGRES_HOST=localhost
+# POSTGRES_PORT=5432
+# POSTGRES_DATABASE=leave_management
+# POSTGRES_USER=leave_user
+# POSTGRES_PASSWORD=leave_password
 
 # Application settings
 APP_ENV=development
@@ -62,12 +66,12 @@ DB_PORT=5432
 
 | Variable | Purpose | Example |
 |----------|---------|---------|
-| `DATABASE_URL` | Full connection string | `postgresql://...` |
-| `DB_HOST` | Database host (if using individual vars) | `ep-xxxx.neon.tech` |
-| `DB_PORT` | Database port (if using individual vars) | `5432` |
-| `DB_NAME` | Database name (if using individual vars) | `leave_management` |
-| `DB_USER` | Database username (if using individual vars) | `neon_user` |
-| `DB_PASSWORD` | Database password (if using individual vars) | `*****` |
+| `DATABASE_URL` | Full connection string (Vercel Neon) | `postgresql://...` |
+| `POSTGRES_HOST` | Database host | `ep-xxxx.neon.tech` or `postgres` |
+| `POSTGRES_PORT` | Database port | `5432` |
+| `POSTGRES_DATABASE` | Database name | `leave_management` |
+| `POSTGRES_USER` | Database username | `neon_user` |
+| `POSTGRES_PASSWORD` | Database password | `*****` |
 | `APP_ENV` | Environment mode | `production` or `development` |
 | `APP_DEBUG` | Debug mode (use false in production) | `true` or `false` |
 | `APP_TIMEZONE` | Server timezone | `UTC` |
@@ -75,15 +79,17 @@ DB_PORT=5432
 
 ## Using DATABASE_URL vs Individual Variables
 
-### Recommended: DATABASE_URL (Neon Optimized)
+### Recommended: DATABASE_URL (Vercel Neon Optimized)
 - ✅ Single environment variable
 - ✅ Automatic SSL support
 - ✅ Connection pooling ready
 - ✅ No additional parsing needed
+- ✅ Standard Vercel Neon format
 
-### Alternative: Individual Variables (Docker Compatible)
+### Alternative: Individual POSTGRES_* Variables (Docker Compatible)
 - ✅ Easier to manage per environment
 - ✅ Better for complex setups
+- ✅ Matches Vercel Neon's variable naming
 - ⚠️ Requires manual SSL configuration
 - ⚠️ Not pooling-optimized
 

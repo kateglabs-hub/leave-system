@@ -28,6 +28,11 @@ CREATE TABLE IF NOT EXISTS departments (
     created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );
 
+-- Add foreign key for departments in users table
+ALTER TABLE users
+ADD CONSTRAINT fk_users_department 
+FOREIGN KEY (department_id) REFERENCES departments(id) ON DELETE SET NULL;
+
 -- Leave Types Table
 CREATE TABLE IF NOT EXISTS leave_types (
     id SERIAL PRIMARY KEY,
@@ -80,11 +85,6 @@ CREATE INDEX IF NOT EXISTS idx_leave_requests_user_status ON leave_requests(user
 CREATE INDEX IF NOT EXISTS idx_leave_requests_dates ON leave_requests(start_date, end_date);
 CREATE INDEX IF NOT EXISTS idx_leave_requests_status ON leave_requests(status);
 
--- Add foreign key for departments in users table
-ALTER TABLE users
-ADD CONSTRAINT fk_users_department 
-FOREIGN KEY (department_id) REFERENCES departments(id) ON DELETE SET NULL;
-
 -- Insert default leave types
 INSERT INTO leave_types (name, description, days_allowed_staff, days_allowed_management, requires_documentation, is_paid) VALUES
 ('Annual Leave', 'Regular annual vacation leave', 21, 25, FALSE, TRUE),
@@ -93,7 +93,8 @@ INSERT INTO leave_types (name, description, days_allowed_staff, days_allowed_man
 ('Maternity Leave', 'Maternity leave for mothers', 90, 90, TRUE, TRUE),
 ('Paternity Leave', 'Paternity leave for fathers', 10, 14, TRUE, TRUE),
 ('Study Leave', 'Leave for educational purposes', 5, 10, TRUE, FALSE),
-('Unpaid Leave', 'Leave without pay', 0, 0, TRUE, FALSE);
+('Unpaid Leave', 'Leave without pay', 0, 0, TRUE, FALSE)
+ON CONFLICT DO NOTHING;
 
 -- Insert default departments
 INSERT INTO departments (name, description) VALUES
@@ -102,9 +103,5 @@ INSERT INTO departments (name, description) VALUES
 ('Finance', 'Finance Department'),
 ('Marketing', 'Marketing Department'),
 ('Operations', 'Operations Department'),
-('Sales', 'Sales Department');
-
--- Insert default admin user (password: admin123 - hashed with bcrypt)
-INSERT INTO users (employee_id, email, password, first_name, last_name, role, department_id, employee_level, hire_date) VALUES
-('EMP001', 'admin@company.com', '$2y$10$N9qo8uLOickgx2ZMRZoMyeIjZAgcg7b3XeKeUxWdeS86E36P4/KFm', 'Admin', 'User', 'admin', 1, 'management', '2020-01-01'),
-('EMP002', 'hr@company.com', '$2y$10$N9qo8uLOickgx2ZMRZoMyeIjZAgcg7b3XeKeUxWdeS86E36P4/KFm', 'HR', 'Manager', 'hr', 1, 'management', '2020-01-01');
+('Sales', 'Sales Department')
+ON CONFLICT DO NOTHING;

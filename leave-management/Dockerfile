@@ -3,12 +3,11 @@ FROM php:8.2-apache
 
 # Install system dependencies
 RUN apt-get update && apt-get install -y \
-    mariadb-client-compat \
     libpq-dev \
     curl \
     git \
     unzip \
-    && docker-php-ext-install pdo pdo_mysql \
+    && docker-php-ext-install pdo pdo_pgsql \
     && a2enmod rewrite \
     && rm -rf /var/lib/apt/lists/*
 

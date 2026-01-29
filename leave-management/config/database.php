@@ -17,11 +17,12 @@ class Database {
             $this->parseNeonUrl($databaseUrl);
         } else {
             // Fallback to individual environment variables (local development)
-            $this->host = getenv('DB_HOST') ?: 'localhost';
-            $this->port = getenv('DB_PORT') ?: '5432';
-            $this->db_name = getenv('DB_NAME') ?: 'leave_management';
-            $this->username = getenv('DB_USER') ?: 'postgres';
-            $this->password = getenv('DB_PASSWORD') ?: '';
+            // Supports both POSTGRES_* (Vercel Neon) and DB_* (legacy)
+            $this->host = getenv('POSTGRES_HOST') ?: getenv('DB_HOST') ?: 'localhost';
+            $this->port = getenv('POSTGRES_PORT') ?: getenv('DB_PORT') ?: '5432';
+            $this->db_name = getenv('POSTGRES_DATABASE') ?: getenv('DB_NAME') ?: 'leave_management';
+            $this->username = getenv('POSTGRES_USER') ?: getenv('DB_USER') ?: 'postgres';
+            $this->password = getenv('POSTGRES_PASSWORD') ?: getenv('DB_PASSWORD') ?: '';
             $this->usePooling = false;
         }
     }

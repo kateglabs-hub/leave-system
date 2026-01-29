@@ -1,16 +1,14 @@
-version: '3.8'
-
 services:
   # PostgreSQL Database Service
   postgres:
     image: postgres:15-alpine
     container_name: leave_management_postgres
     environment:
-      POSTGRES_USER: ${DB_USER:-leave_user}
-      POSTGRES_PASSWORD: ${DB_PASSWORD:-leave_password}
-      POSTGRES_DB: ${DB_NAME:-leave_management}
+      POSTGRES_USER: ${POSTGRES_USER:-leave_user}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-leave_password}
+      POSTGRES_DB: ${POSTGRES_DATABASE:-leave_management}
     ports:
-      - "${DB_PORT:-5432}:5432"
+      - "${POSTGRES_PORT:-5432}:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
       - ./database/schema.sql:/docker-entrypoint-initdb.d/01-schema.sql
@@ -18,7 +16,7 @@ services:
     networks:
       - leave_network
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U ${DB_USER:-leave_user}"]
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-leave_user}"]
       timeout: 20s
       retries: 10
     restart: unless-stopped
@@ -35,9 +33,11 @@ services:
     environment:
       DB_HOST: postgres
       DB_PORT: 5432
-      DB_NAME: ${DB_NAME:-leave_management}
-      DB_USER: ${DB_USER:-leave_user}
-      DB_PASSWORD: ${DB_PASSWORD:-leave_password}
+      POSTGRES_HOST: postgres
+      POSTGRES_PORT: 5432
+      POSTGRES_DATABASE: ${POSTGRES_DATABASE:-leave_management}
+      POSTGRES_USER: ${POSTGRES_USER:-leave_user}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-leave_password}
       APP_ENV: ${APP_ENV:-development}
       APP_DEBUG: ${APP_DEBUG:-true}
     ports:
