@@ -1,0 +1,8 @@
+<?php
+// Original api/index.php preserved from legacy app (excerpt)
+
+require_once __DIR__ . '/../classes/Auth.php';
+require_once __DIR__ . '/../classes/Leave.php';
+require_once __DIR__ . '/../classes/Reports.php';
+
+// This file is preserved for reference in the migration to Laravel.

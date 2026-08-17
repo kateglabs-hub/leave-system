@@ -1,13 +1,17 @@
 {
-  "name": "kevo-dev/leave-management-system",
-  "description": "A comprehensive leave management system with role-based access control",
+  "name": "kateglabs-hub/leave-system",
   "type": "project",
+  "description": "Laravel 10 port of leave management system",
   "require": {
-    "php": ">=8.0"
+    "php": "^8.1",
+    "laravel/framework": "^10.0"
+  },
+  "require-dev": {
+    "laravel/breeze": "^1.20"
   },
   "autoload": {
     "psr-4": {
-      "App\\": "classes/"
+      "App\\": "app/"
     }
   }
 }

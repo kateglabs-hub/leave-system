@@ -1,0 +1,4 @@
+<?php
+// Auth.php preserved excerpt
+
+// See original repository for full legacy implementation. This copy is for reference only.
